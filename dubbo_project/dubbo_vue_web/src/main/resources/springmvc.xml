@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--1.组件扫描-->
+    <context:component-scan base-package="cn.itcast.controller"/>
+    <!--2.mvc注解驱动-->
+    <mvc:annotation-driven/>
+    <!--3.释放静态资源-->
+    <mvc:default-servlet-handler/>
+    <!--4.视图解析器-->
+<!--    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>-->
+    <!--配置dubbo注册中心-->
+    <!--1.应用名称-->
+    <dubbo:application name="dubbo_vue_web"/>
+    <!--2.关联的注册中心-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+    <!--3.注解扫描-->
+    <dubbo:annotation package="cn.itcast.controller"/>
+
+    <!--4.启动时检查-->
+    <dubbo:consumer check="false"/>
+
+</beans>

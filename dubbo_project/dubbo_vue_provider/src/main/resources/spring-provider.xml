@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://code.alibabatech.com/schema/dubbo
+         http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--组件扫描-->
+    <context:component-scan base-package="cn.itcast"/>
+    <!--引入外部资源配置文件-->
+    <context:property-placeholder location="classpath:druid.properties"/>
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.pwd}"/>
+    </bean>
+    <!--配置数据库操作：JdbcTemplate-->
+    <!--mybatis框架交由spring管理-->
+    <!--获取SqlSessionFactory对象-->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="typeAliasesPackage" value="cn.itcast.domain"/>
+    </bean>
+
+    <!--mapper扫描器获取mapper代理对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.itcast.mapper"/>
+    </bean>
+
+
+    <!--dubbo相关配置-->
+    <!--给应用起一个名称，要求唯一-->
+    <dubbo:application name="dubbodemo_provider"/>
+    <!--连接服务注册中心zookeeper ip为zookeeper所在服务器IP地址-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+    <!--注册协议和port 端口默认是20880-->
+    <dubbo:protocol name="dubbo" port="20881"></dubbo:protocol>
+    <!--扫描指定包，加入@Service注解的类会被发布为服务-->
+    <dubbo:annotation package="cn.itcast.service"/>
+
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--引事务管理对象-->
+
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+</beans>
